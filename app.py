@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pandas as pd
 
 from utils.parser import parse_csv
@@ -35,7 +35,26 @@ def view_data(parsed_file):
     path = os.path.join(app.config['PARSED_FOLDER'], parsed_file)
     df = pd.read_json(path)
     summary = trending_summary(df)
-    return render_template('dashboard.html', tables=df.to_dict(orient='records'), summary=summary)
+
+    artists = sorted(df['Artist'].dropna().unique().tolist())
+    outlets = sorted(df['Outletname'].dropna().unique().tolist())
+    units_min = int(df['Units'].min())
+    units_max = int(df['Units'].max())
+    royalty_min = float(df['Royalty Amount Customer'].min())
+    royalty_max = float(df['Royalty Amount Customer'].max())
+
+    return render_template(
+        'dashboard.html',
+        tables=df.to_dict(orient='records'),
+        summary=summary,
+        artists=artists,
+        outlets=outlets,
+        units_min=units_min,
+        units_max=units_max,
+        royalty_min=royalty_min,
+        royalty_max=royalty_max,
+        parsed_file=parsed_file
+    )
 
 
 @app.route('/api/data/<parsed_file>')
@@ -43,6 +62,51 @@ def api_data(parsed_file):
     path = os.path.join(app.config['PARSED_FOLDER'], parsed_file)
     df = pd.read_json(path)
     return df.to_json(orient='records', force_ascii=False)
+
+
+@app.route('/filter_data/<parsed_file>')
+def filter_data(parsed_file):
+    path = os.path.join(app.config['PARSED_FOLDER'], parsed_file)
+    df = pd.read_json(path)
+
+    artist = request.args.get('artist')
+    if artist and artist != 'all':
+        df = df[df['Artist'] == artist]
+
+    outlet = request.args.get('outlet')
+    if outlet and outlet != 'all':
+        df = df[df['Outletname'] == outlet]
+
+    start_date = request.args.get('start_date')
+    if start_date:
+        df = df[df['Sales Period'] >= pd.to_datetime(start_date)]
+
+    end_date = request.args.get('end_date')
+    if end_date:
+        df = df[df['Sales Period'] <= pd.to_datetime(end_date)]
+
+    units_min = request.args.get('units_min')
+    if units_min:
+        df = df[df['Units'] >= int(units_min)]
+
+    units_max = request.args.get('units_max')
+    if units_max:
+        df = df[df['Units'] <= int(units_max)]
+
+    royalty_min = request.args.get('royalty_min')
+    if royalty_min:
+        df = df[df['Royalty Amount Customer'] >= float(royalty_min)]
+
+    royalty_max = request.args.get('royalty_max')
+    if royalty_max:
+        df = df[df['Royalty Amount Customer'] <= float(royalty_max)]
+
+    summary = trending_summary(df)
+
+    return jsonify({
+        'data': df.to_dict(orient='records'),
+        'summary': summary
+    })
 
 
 if __name__ == '__main__':
