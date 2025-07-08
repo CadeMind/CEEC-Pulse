@@ -18,4 +18,15 @@ def parse_csv(path: str) -> pd.DataFrame:
         raise ValueError(f'Missing columns: {missing_cols}')
     df['Sales Period'] = pd.to_datetime(df['Sales Period'], errors='coerce')
     df = df.dropna(subset=['Sales Period'])
+
+    # Convert numeric columns that may use comma as decimal separator
+    if df['Units'].dtype == 'object':
+        df['Units'] = df['Units'].astype(str).str.replace(',', '.').astype(float)
+
+    df['Royalty Amount Customer'] = (
+        df['Royalty Amount Customer']
+        .astype(str)
+        .str.replace(',', '.')
+        .astype(float)
+    )
     return df
