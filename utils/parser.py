@@ -1,5 +1,15 @@
 import pandas as pd
 
+
+def _parse_sales_period(series: pd.Series) -> pd.Series:
+    """Parse Sales Period handling YYYYMM strings."""
+    col = series.astype(str).str.strip()
+    parsed = pd.to_datetime(col, errors='coerce')
+    mask = parsed.isna() & col.str.match(r'^\d{6}$')
+    if mask.any():
+        parsed.loc[mask] = pd.to_datetime(col[mask], format='%Y%m', errors='coerce')
+    return parsed
+
 REQUIRED_COLUMNS = [
     'Labelname', 'ISRC', 'EAN/UPC', 'Artist', 'Producttitle',
     'Tracktitle', 'ArtNo', 'Outletname', 'Format', 'Territory',
@@ -16,7 +26,7 @@ def parse_csv(path: str) -> pd.DataFrame:
     missing_cols = [c for c in REQUIRED_COLUMNS if c not in df.columns]
     if missing_cols:
         raise ValueError(f'Missing columns: {missing_cols}')
-    df['Sales Period'] = pd.to_datetime(df['Sales Period'], errors='coerce')
+    df['Sales Period'] = _parse_sales_period(df['Sales Period'])
     df = df.dropna(subset=['Sales Period'])
 
     # Convert numeric columns that may use comma as decimal separator
@@ -42,7 +52,7 @@ def parse_excel(path: str) -> pd.DataFrame:
     missing_cols = [c for c in REQUIRED_COLUMNS if c not in df.columns]
     if missing_cols:
         raise ValueError(f'Missing columns: {missing_cols}')
-    df['Sales Period'] = pd.to_datetime(df['Sales Period'], errors='coerce')
+    df['Sales Period'] = _parse_sales_period(df['Sales Period'])
     df = df.dropna(subset=['Sales Period'])
 
     if df['Units'].dtype == 'object':
