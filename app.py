@@ -9,13 +9,13 @@ from flask import (
 import pandas as pd
 import weasyprint
 
-from utils.parser import parse_csv
+from utils.parser import parse_file
 from utils.ai import trending_summary
 
 TRANSLATIONS = {
     'ru': {
         'title': 'CEEC Pulse Dashboard',
-        'upload_csv': 'Загрузить CSV',
+        'upload_file': 'Загрузить файл',
         'all_artists': 'Все артисты',
         'all_outlets': 'Все платформы',
         'reset_filters': 'Сбросить фильтры',
@@ -28,7 +28,7 @@ TRANSLATIONS = {
     },
     'en': {
         'title': 'CEEC Pulse Dashboard',
-        'upload_csv': 'Upload CSV',
+        'upload_file': 'Upload file',
         'all_artists': 'All artists',
         'all_outlets': 'All outlets',
         'reset_filters': 'Reset filters',
@@ -60,7 +60,7 @@ def dashboard():
             filename = datetime.utcnow().strftime('%Y%m%d%H%M%S_') + file.filename
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
-            data = parse_csv(filepath)
+            data = parse_file(filepath)
             parsed_path = os.path.join(app.config['PARSED_FOLDER'], filename + '.json')
             data.to_json(parsed_path, orient='records', force_ascii=False)
             return redirect(url_for('view_data', parsed_file=filename + '.json', lang=lang))
