@@ -8,7 +8,7 @@ REQUIRED_COLUMNS = [
 
 
 def parse_csv(path: str) -> pd.DataFrame:
-    df = pd.read_csv(path, sep=';', encoding='cp1251', errors='ignore')
+    df = pd.read_csv(path, sep=';', encoding='cp1251', on_bad_lines='skip')
     if 'Unnamed: 13' in df.columns:
         df = df.drop(columns=['Unnamed: 13'])
     df = df.dropna(how='all')
