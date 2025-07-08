@@ -19,8 +19,43 @@
     </form>
     {% if tables %}
     <hr/>
+    <div class="row g-2 mb-3" id="filters">
+        <div class="col-md-2">
+            <select id="artist-filter" class="form-select">
+                <option value="all">Все артисты</option>
+                {% for art in artists %}
+                <option value="{{ art }}">{{ art }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select id="outlet-filter" class="form-select">
+                <option value="all">Все платформы</option>
+                {% for out in outlets %}
+                <option value="{{ out }}">{{ out }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="date" id="start-date" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <input type="date" id="end-date" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <input type="range" id="units-min" class="form-range" min="{{ units_min }}" max="{{ units_max }}" value="{{ units_min }}">
+            <input type="range" id="units-max" class="form-range" min="{{ units_min }}" max="{{ units_max }}" value="{{ units_max }}">
+        </div>
+        <div class="col-md-2">
+            <input type="range" id="royalty-min" class="form-range" min="{{ royalty_min }}" max="{{ royalty_max }}" value="{{ royalty_min }}" step="0.01">
+            <input type="range" id="royalty-max" class="form-range" min="{{ royalty_min }}" max="{{ royalty_max }}" value="{{ royalty_max }}" step="0.01">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-secondary" id="reset-filters">Сбросить фильтры</button>
+        </div>
+    </div>
     <h3>AI анализ</h3>
-    <p>{{ summary }}</p>
+    <p id="summary">{{ summary }}</p>
     <h3>Данные</h3>
     <table class="table table-striped" id="data-table">
         <thead>
@@ -42,6 +77,11 @@
     </table>
     {% endif %}
 </div>
+{% if tables %}
+<script>
+    window.parsedFile = "{{ parsed_file }}";
+</script>
+{% endif %}
 <script src="/static/js/main.js"></script>
 </body>
 </html>
