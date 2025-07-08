@@ -22,9 +22,9 @@
     </div>
     <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
-            <input class="form-control" type="file" name="file" accept=".csv" required>
+            <input class="form-control" type="file" name="file" accept=".csv,.xlsx" required>
         </div>
-        <button class="btn btn-primary" type="submit">{{ t['upload_csv'] }}</button>
+        <button class="btn btn-primary" type="submit">{{ t['upload_file'] }}</button>
     </form>
     {% if tables %}
     <hr/>
