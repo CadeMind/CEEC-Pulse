@@ -40,7 +40,7 @@ python app.py
 Файл отчёта (CSV или XLSX) должен содержать как минимум следующие столбцы:
 `Labelname`, `ISRC`, `EAN/UPC`, `Artist`, `Producttitle`, `Tracktitle`, `ArtNo`, `Outletname`, `Format`, `Territory`, `Sales Period`, `Units`, `Royalty Amount Customer`.
 
-`Sales Period` должен быть представлен в виде даты; строки без корректной даты будут пропущены.
+`Sales Period` должен быть представлен в виде даты. Допускается формат `YYYYMM` (например `202501` для января 2025 года). Строки без корректной даты будут пропущены.
 
 ## Развитие
 
