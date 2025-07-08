@@ -56,6 +56,22 @@
     </div>
     <h3>AI анализ</h3>
     <p id="summary">{{ summary }}</p>
+
+    <div class="row mb-4" id="charts">
+        <div class="col-md-6 mb-3">
+            <canvas id="artists-chart" height="200"></canvas>
+        </div>
+        <div class="col-md-6 mb-3">
+            <canvas id="tracks-chart" height="200"></canvas>
+        </div>
+        <div class="col-md-6 mb-3">
+            <canvas id="outlet-chart" height="200"></canvas>
+        </div>
+        <div class="col-md-6 mb-3">
+            <canvas id="sales-chart" height="200"></canvas>
+        </div>
+    </div>
+
     <h3>Данные</h3>
     <table class="table table-striped" id="data-table">
         <thead>
