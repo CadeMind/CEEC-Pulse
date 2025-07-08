@@ -128,8 +128,6 @@ def filter_data(parsed_file):
     if artist and artist != 'all':
         df = df[df['Artist'] == artist]
 
-@@ -100,27 +142,61 @@ def filter_data(parsed_file):
-
     units_min = request.args.get('units_min')
     if units_min:
         df = df[df['Units'] >= int(units_min)]
