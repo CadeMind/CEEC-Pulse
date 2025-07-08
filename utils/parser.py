@@ -30,3 +30,37 @@ def parse_csv(path: str) -> pd.DataFrame:
         .astype(float)
     )
     return df
+
+
+def parse_excel(path: str) -> pd.DataFrame:
+    """Parse an Excel report (.xlsx) using the same rules as CSV."""
+    df = pd.read_excel(path, engine='openpyxl')
+    if 'Unnamed: 13' in df.columns:
+        df = df.drop(columns=['Unnamed: 13'])
+    df = df.dropna(how='all')
+    df = df.fillna('')
+    missing_cols = [c for c in REQUIRED_COLUMNS if c not in df.columns]
+    if missing_cols:
+        raise ValueError(f'Missing columns: {missing_cols}')
+    df['Sales Period'] = pd.to_datetime(df['Sales Period'], errors='coerce')
+    df = df.dropna(subset=['Sales Period'])
+
+    if df['Units'].dtype == 'object':
+        df['Units'] = df['Units'].astype(str).str.replace(',', '.').astype(float)
+
+    df['Royalty Amount Customer'] = (
+        df['Royalty Amount Customer']
+        .astype(str)
+        .str.replace(',', '.')
+        .astype(float)
+    )
+    return df
+
+
+def parse_file(path: str) -> pd.DataFrame:
+    """Parse a report in CSV or XLSX format."""
+    if path.lower().endswith('.csv'):
+        return parse_csv(path)
+    if path.lower().endswith('.xlsx'):
+        return parse_excel(path)
+    raise ValueError('Unsupported file format')
