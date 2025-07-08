@@ -153,4 +153,19 @@ $(function() {
     if (typeof window.parsedFile !== 'undefined') {
         fetchFiltered();
     }
+
+    $('#lang-select').on('change', function() {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', $(this).val());
+        window.location.href = url.toString();
+    });
+
+    $('#theme-toggle').on('click', function() {
+        $('body').toggleClass('dark');
+        localStorage.setItem('theme', $('body').hasClass('dark') ? 'dark' : 'light');
+    });
+
+    if (localStorage.getItem('theme') === 'dark') {
+        $('body').addClass('dark');
+    }
 });
