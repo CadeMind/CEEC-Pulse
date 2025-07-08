@@ -12,6 +12,9 @@ def trending_summary(df: pd.DataFrame) -> str:
 
     df_sorted = df.sort_values('Sales Period')
 
+    # Ensure Units column is numeric
+    df_sorted['Units'] = pd.to_numeric(df_sorted['Units'], errors='coerce').fillna(0)
+
     latest_period = df_sorted['Sales Period'].max()
     prev_period = latest_period - pd.Timedelta(days=7)
 
