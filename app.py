@@ -34,6 +34,13 @@ def dashboard():
 def view_data(parsed_file):
     path = os.path.join(app.config['PARSED_FOLDER'], parsed_file)
     df = pd.read_json(path)
+
+    # Normalize numeric columns that may have comma decimal separator
+    if df['Units'].dtype == 'object':
+        df['Units'] = df['Units'].astype(str).str.replace(',', '.').astype(float)
+    df['Royalty Amount Customer'] = (
+        df['Royalty Amount Customer'].astype(str).str.replace(',', '.').astype(float)
+    )
     summary = trending_summary(df)
 
     artists = sorted(df['Artist'].dropna().unique().tolist())
@@ -68,6 +75,12 @@ def api_data(parsed_file):
 def filter_data(parsed_file):
     path = os.path.join(app.config['PARSED_FOLDER'], parsed_file)
     df = pd.read_json(path)
+
+    if df['Units'].dtype == 'object':
+        df['Units'] = df['Units'].astype(str).str.replace(',', '.').astype(float)
+    df['Royalty Amount Customer'] = (
+        df['Royalty Amount Customer'].astype(str).str.replace(',', '.').astype(float)
+    )
 
     artist = request.args.get('artist')
     if artist and artist != 'all':
